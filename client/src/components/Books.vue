@@ -221,7 +221,7 @@ export default {
   },
   methods: {
     addBook(payload) {
-      const path = 'http://localhost:5001/books';
+      const path = '/api/books';
       axios.post(path, payload)
         .then(() => {
           this.getBooks();
@@ -234,7 +234,7 @@ export default {
         });
     },
     getBooks() {
-      const path = 'http://localhost:5001/books';
+      const path = '/api/books';
       axios.get(path)
         .then((res) => {
           this.books = res.data.books;
@@ -290,7 +290,7 @@ export default {
       this.editBookForm.read = [];
     },
     removeBook(bookID) {
-      const path = `http://localhost:5001/books/${bookID}`;
+      const path = `/api/books/${bookID}`;
       axios.delete(path)
         .then(() => {
           this.getBooks();
@@ -324,7 +324,7 @@ export default {
       }
     },
     updateBook(payload, bookID) {
-      const path = `http://localhost:5001/books/${bookID}`;
+      const path = `/api/books/${bookID}`;
       axios.put(path, payload)
         .then(() => {
           this.getBooks();
