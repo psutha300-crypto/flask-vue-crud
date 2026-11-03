@@ -31,6 +31,14 @@ pipeline {
                 '''
             }
         }
+               stage('Build') {
+            steps {
+                sh '''
+                    set -eu
+                    docker build --platform linux/arm64 --target build --tag assessment-frontend-build:ci ./client
+                '''
+            }
+        }
 
         stage('Verify AWS access') {
             steps {
