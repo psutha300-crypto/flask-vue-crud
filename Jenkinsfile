@@ -140,8 +140,8 @@ pipeline {
 
                         account_id="$(aws sts get-caller-identity --query Account --output text)"
                         ecr_registry="${account_id}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
-
-                        remote_parameters="$(python3 - "$GIT_COMMIT" "$AWS_DEFAULT_REGION" "$ecr_registry" "$IMAGE_TAG" <<'PY'
+                        git_commit="$(git rev-parse HEAD)"
+                        remote_parameters="$(python3 - "$git_commit" "$AWS_DEFAULT_REGION" "$ecr_registry" "$IMAGE_TAG" <<'PY'
 import json
 import re
 import sys
