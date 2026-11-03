@@ -39,6 +39,14 @@ pipeline {
                 '''
             }
         }
+                stage('Lint') {
+            steps {
+                sh '''
+                    set -eu
+                    flake8 --config=.flake8 server --show-source --statistics
+                '''
+            }
+        }
 
         stage('Verify AWS access') {
             steps {
