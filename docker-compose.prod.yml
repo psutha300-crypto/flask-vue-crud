@@ -1,0 +1,35 @@
+services:
+  backend:
+    image: "${ECR_REGISTRY:?Set ECR_REGISTRY}/assessment/backend:${IMAGE_TAG:?Set IMAGE_TAG}"
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5001/ping', timeout=3)"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  frontend:
+    image: "${ECR_REGISTRY:?Set ECR_REGISTRY}/assessment/frontend:${IMAGE_TAG:?Set IMAGE_TAG}"
+    restart: unless-stopped
+    ports:
+      - "80:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - -q
+        - -O
+        - /dev/null
+        - http://127.0.0.1:8080/api/ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
