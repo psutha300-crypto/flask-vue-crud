@@ -117,7 +117,10 @@ pipeline {
                         echo "Pushed both images with tag $IMAGE_TAG"
                     '''
                 }
-                        stage('SSM connectivity') {
+            }
+        }
+
+        stage('SSM connectivity') {
             steps {
                 script {
                     def target = params.TARGET_INSTANCE_ID?.trim()
