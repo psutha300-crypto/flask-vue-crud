@@ -12,6 +12,13 @@ pipeline {
         AWS_DEFAULT_REGION = 'eu-west-2'
         AWS_PAGER = ''
     }
+        parameters {
+        string(
+            name: 'TARGET_INSTANCE_ID',
+            defaultValue: '',
+            description: 'EC2 instance ID in eu-west-2 for SSM deployment'
+        )
+    }
 
     stages {
         stage('Checkout') {
@@ -108,6 +115,29 @@ pipeline {
                         docker push "$ecr_registry/assessment/frontend:$IMAGE_TAG"
 
                         echo "Pushed both images with tag $IMAGE_TAG"
+                    '''
+                }
+                        stage('SSM connectivity') {
+            steps {
+                script {
+                    def target = params.TARGET_INSTANCE_ID?.trim()
+                    if (!(target ==~ /^i-[0-9a-f]{8,17}$/)) {
+                        error('Enter a valid EC2 instance ID in TARGET_INSTANCE_ID')
+                    }
+                }
+
+                withCredentials([usernamePassword(
+                    credentialsId: 'aws-deploy',
+                    usernameVariable: 'AWS_ACCESS_KEY_ID',
+                    passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                )]) {
+                    sh '''
+                        set +x
+                        set -eu
+
+                        command_id="$(aws ssm send-command --region "$AWS_DEFAULT_REGION" --instance-ids "$TARGET_INSTANCE_ID" --document-name AWS-RunShellScript --parameters '{"commands":["echo SSM connection verified"]}' --query Command.CommandId --output text)"
+                        aws ssm wait command-executed --region "$AWS_DEFAULT_REGION" --command-id "$command_id" --instance-id "$TARGET_INSTANCE_ID"
+                        aws ssm get-command-invocation --region "$AWS_DEFAULT_REGION" --command-id "$command_id" --instance-id "$TARGET_INSTANCE_ID" --query StandardOutputContent --output text
                     '''
                 }
             }
