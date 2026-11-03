@@ -152,7 +152,7 @@ if not re.fullmatch(r"[0-9a-f]{40}", commit):
     raise SystemExit("Invalid Git commit")
 if region != "eu-west-2":
     raise SystemExit("Unexpected AWS region")
-if not re.fullmatch(r"[0-9]{12}\.dkr\.ecr\.eu-west-2\.amazonaws\.com", registry):
+if not re.fullmatch(r"[0-9]{12}\\.dkr\\.ecr\\.eu-west-2\\.amazonaws\\.com", registry):
     raise SystemExit("Invalid ECR registry")
 if not re.fullmatch(r"[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}", tag):
     raise SystemExit("Invalid image tag")
